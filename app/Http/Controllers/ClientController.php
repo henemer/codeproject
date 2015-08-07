@@ -5,6 +5,7 @@ namespace CodeProject\Http\Controllers;
 use CodeProject\Repositories\ClientRepository;
 use CodeProject\Services\ClientService;
 use Illuminate\Http\Request;
+use Exception;
 
 
 class ClientController extends Controller
@@ -58,7 +59,7 @@ class ClientController extends Controller
      */
     public function show($id)
     {
-        return $this->repository->find($id);
+        return $this->service->show($id);
     }
 
 
@@ -83,6 +84,6 @@ class ClientController extends Controller
      */
     public function destroy($id)
     {
-        $this->repository->delete($id);
+        return $this->service->delete($id);
     }
 }
