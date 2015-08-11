@@ -9,11 +9,6 @@ use Illuminate\Http\Request;
 class ProjectController extends Controller
 {
     /**
-     * @var ProjectRepository
-     */
-    private $repository;
-
-    /**
      * @var ProjectService
      */
     private $service;
@@ -22,8 +17,7 @@ class ProjectController extends Controller
      * @param ProjectRepository $repository
      * @param ProjectService $service
      */
-    public function __construct(ProjectRepository $repository, ProjectService $service) {
-        $this->repository = $repository;
+    public function __construct(ProjectService $service) {
         $this->service = $service;
     }
     /**
@@ -83,6 +77,24 @@ class ProjectController extends Controller
     public function destroy($id)
     {
         $this->service->delete($id);
+    }
+
+    public function addMember(Request $request)
+    {
+
+        return $this->service->addMember($request->all());
+    }
+
+    public function showMembers($idProject)
+    {
+
+        return $this->service->showMembers($idProject);
+    }
+
+    public function removeMember($id, $UserId)
+    {
+
+        return $this->service->removeMember($id, $UserId);
     }
 
 }

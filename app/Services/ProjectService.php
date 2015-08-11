@@ -10,6 +10,7 @@ namespace CodeProject\Services;
 
 use CodeProject\Repositories\ProjectRepository;
 use CodeProject\Validators\ProjectValidator;
+use CodeProject\Validators\ProjectMemberValidator;
 use Prettus\Validator\Exceptions\ValidatorException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
@@ -27,9 +28,16 @@ class ProjectService {
      */
     private $validator;
 
-    public function __construct(ProjectRepository $repository, ProjectValidator $validator) {
+    /**
+     * @var ProjectMemberValidator;
+     */
+    private $projectMemberValidator;
+
+    public function __construct(ProjectRepository $repository, ProjectValidator $validator,
+                ProjectMemberValidator $projectMemberValidator) {
         $this->repository = $repository;
         $this->validator = $validator;
+        $this->projectMemberValidator = $projectMemberValidator;
     }
 
     public function show($id)
@@ -58,8 +66,6 @@ class ProjectService {
                 ];
 
         }
-
-
     }
 
     public function update(array $data, $id) {
@@ -102,6 +108,68 @@ class ProjectService {
                     'message' => 'Project can not be deleted'
                 ];
         }
+
+    }
+
+    public function addMember(array $data)
+    {
+        try {
+            $this->projectMemberValidator->with($data)->passesOrFail();
+            return $this->repository->addMember($data['project_id'], $data['user_id']);
+        } catch(ValidatorException $e) {
+            return
+                [
+                    'error' => true,
+                    'message' => $e->getMessageBag()
+                ];
+
+        }
+        catch(ModelNotFoundException $e) {
+            return
+                [
+                    'error' => true,
+                    'message' => 'Project or User not found'
+                ];
+        }
+
+    }
+
+    public function removeMember($projectId, $userId)
+    {
+        try {
+            return $this->repository->removeMember($projectId, $userId);
+        } catch(ModelNotFoundException $e) {
+            return
+                [
+                    'error' => true,
+                    'message' => 'Project or User not found'
+                ];
+        }
+
+    }
+
+
+    public function showMembers($idProject) {
+        try {
+            return $this->repository->find($idProject)->members;
+        } catch(ModelNotFoundException $e) {
+                return
+                    [
+                        'error' => true,
+                        'message' => 'Project not found'
+                    ];
+        }
+
+    }
+
+    public function isMember($projectId, $userId)
+    {
+
+         if($this->repository->find($projectId)->members->find($userId))
+         {
+             return true;
+         }
+        return false;
 
     }
 
