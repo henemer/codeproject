@@ -14,11 +14,16 @@ class ProjectController extends Controller
     private $service;
 
     /**
+     * @var ProjectRepository
+     */
+    private $repository;
+    /**
      * @param ProjectRepository $repository
      * @param ProjectService $service
      */
-    public function __construct(ProjectService $service) {
+    public function __construct(ProjectService $service, ProjectRepository $repository) {
         $this->service = $service;
+        $this->repository = $repository;
     }
     /**
      * Display a listing of the resource.
