@@ -10,6 +10,7 @@ namespace CodeProject\Repositories;
 
 use CodeProject\Entities\Project;
 use Prettus\Repository\Eloquent\BaseRepository;
+use CodeProject\Presenters\ProjectPresenter;
 
 class ProjectRepositoryEloquent extends BaseRepository implements ProjectRepository {
     public function model() {
@@ -24,11 +25,29 @@ class ProjectRepositoryEloquent extends BaseRepository implements ProjectReposit
         $this->find($projectId)->members()->detach($userId);
     }
 
+    public function isOwner($projectId, $userId) {
+        if(count($this->skipPresenter()->findWhere(['id' =>$projectId, 'owner_id' => $userId])) > 0) {
+            return true;
+        }
+
+        return false;
+    }
     public function isMember($projectId, $userId) {
 
-        return $this->findWhere(['project_id' =>$projectId, 'user_id' => $userId]);
+        $project = $this->skipPresenter()->find($projectId);
 
+        foreach($project->members as $member) {
+            if($member->id == $userId) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
+    public function presenter()
+    {
+        return ProjectPresenter::class;
+    }
 }

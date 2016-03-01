@@ -5,6 +5,7 @@ namespace CodeProject\Http\Controllers;
 use CodeProject\Repositories\ProjectRepository;
 use CodeProject\Services\ProjectService;
 use Illuminate\Http\Request;
+use LucaDegasperi\OAuth2Server\Facades\Authorizer;
 
 class ProjectController extends Controller
 {
@@ -14,11 +15,17 @@ class ProjectController extends Controller
     private $service;
 
     /**
+     * @var ProjectRepository
+     */
+    private $repository;
+
+    /**
      * @param ProjectRepository $repository
      * @param ProjectService $service
      */
-    public function __construct(ProjectService $service) {
+    public function __construct(ProjectRepository $repository, ProjectService $service) {
         $this->service = $service;
+        $this->repository = $repository;
     }
     /**
      * Display a listing of the resource.
@@ -27,7 +34,7 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        return $this->repository->with(['owner','client'])->all();
+        return $this->repository->with(['owner','client'])->findWhere(['owner_id'=>Authorizer::getResourceOwnerId()]);
     }
 
 
@@ -51,7 +58,12 @@ class ProjectController extends Controller
      */
     public function show($id)
     {
+           if($this->checkProjectPermissions($id) == false)  {
+            return['error'=>'Access forbidden'];
+        }
         return $this->service->show($id);
+
+
     }
 
 
@@ -64,6 +76,10 @@ class ProjectController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if($this->checkProjectPermissions($id) == false)  {
+            return['error'=>'Access forbidden'];
+        }
+
         return $this->service->update($request->all(), $id);
 
     }
@@ -76,6 +92,10 @@ class ProjectController extends Controller
      */
     public function destroy($id)
     {
+        if($this->checkProjectOwner($id) == false)  {
+            return['error'=>'Access forbidden'];
+        }
+
         $this->service->delete($id);
     }
 
@@ -95,6 +115,26 @@ class ProjectController extends Controller
     {
 
         return $this->service->removeMember($id, $UserId);
+    }
+
+    private function checkProjectOwner($projectId) {
+        return $this->repository->isOwner($projectId, Authorizer::getResourceOwnerId());
+
+    }
+
+    private function checkProjectMember($projectId) {
+        return $this->repository->isMember($projectId, Authorizer::getResourceOwnerId());
+
+    }
+
+    private function checkProjectPermissions($projectId) {
+        if($this->checkProjectOwner($projectId) or
+           $this->checkProjectMember($projectId)) {
+               return true;
+        }
+
+        return false;
+
     }
 
 }

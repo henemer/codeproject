@@ -1,0 +1,33 @@
+{
+  "name": "laravel-codeproject-frontend",
+  "version": "0.0.0",
+  "homepage": "https://github.com/henemer/codeproject",
+  "authors": [
+    "henemer <emerson@henning.com.br>"
+  ],
+  "description": "Frontend de gerenciador de projetos",
+  "moduleType": [
+    "amd"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "resources/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "1.4.1",
+    "angular-animate": "1.4.1",
+    "angular-bootstrap": "0.13.4",
+    "angular-messages": "1.4.1",
+    "angular-oauth2": "~3.0.1",
+    "angular-resource": "1.4.1",
+    "angular-route": "1.4.1",
+    "angular-strap": "2.2.4",
+    "bootstrap": "3.3.5",
+    "ng-file-upload": "7.0.17"
+  }
+}

@@ -15,6 +15,9 @@ use Prettus\Validator\Exceptions\ValidatorException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Contracts\Filesystem\Factory as Storage;
+
 
 class ProjectService {
 
@@ -33,11 +36,23 @@ class ProjectService {
      */
     private $projectMemberValidator;
 
+    /**
+     * @var filesystem;
+     */
+    private $filesystem;
+    /**
+     * @var Storage
+     */
+    private $storage;
+
     public function __construct(ProjectRepository $repository, ProjectValidator $validator,
-                ProjectMemberValidator $projectMemberValidator) {
+                ProjectMemberValidator $projectMemberValidator, Filesystem $filesystem,
+                Storage $storage) {
         $this->repository = $repository;
         $this->validator = $validator;
         $this->projectMemberValidator = $projectMemberValidator;
+        $this->filesystem = $filesystem;
+        $this->storage = $storage;
     }
 
     public function show($id)
@@ -170,6 +185,16 @@ class ProjectService {
              return true;
          }
         return false;
+
+    }
+
+    public function createFile(array $data) {
+
+        $project = $this->repository->skipPresenter()->find($data['project_id']);
+        $projectFile = $project->files()->create($data);
+
+        $this->storage->put($projectFile->id.".".$data['extension'], $this->filesystem->get($data['file']));
+
 
     }
 

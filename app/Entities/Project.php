@@ -26,7 +26,7 @@ class Project extends Model implements Transformable
     }
 
     public function client() {
-        return $this->belongsTo('CodeProject\Entities\Client');
+        return $this->belongsTo(Client::class);
     }
 
     public function notes() {
@@ -40,6 +40,11 @@ class Project extends Model implements Transformable
     public function members() {
         return $this->belongsToMany(User::class, 'project_members', 'project_id', 'user_id');
     }
+
+    public function files() {
+        return $this->hasMany(ProjectFile::class);
+    }
+
 
 }
 
