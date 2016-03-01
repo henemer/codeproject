@@ -18,12 +18,19 @@ class ProjectController extends Controller
      * @var ProjectRepository
      */
     private $repository;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7425b587e2d0f95a41ada881039c80a47bcec263
     /**
      * @param ProjectRepository $repository
      * @param ProjectService $service
      */
+<<<<<<< HEAD
     public function __construct(ProjectRepository $repository, ProjectService $service) {
+=======
+    public function __construct(ProjectService $service, ProjectRepository $repository) {
+>>>>>>> 7425b587e2d0f95a41ada881039c80a47bcec263
         $this->service = $service;
         $this->repository = $repository;
     }
